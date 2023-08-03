@@ -2,8 +2,7 @@ part of 'wheel.dart';
 
 enum HapticImpact { none, light, medium, heavy }
 
-Offset _calculateWheelOffset(
-    BoxConstraints constraints, TextDirection textDirection) {
+Offset _calculateWheelOffset(BoxConstraints constraints, TextDirection textDirection) {
   final smallerSide = getSmallerSide(constraints);
   var offsetX = constraints.maxWidth / 2;
   if (textDirection == TextDirection.rtl) {
@@ -190,7 +189,7 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
     final rotateAnim = CurvedAnimation(parent: rotateAnimCtrl, curve: curve);
     Future<void> animate() async {
       if (rotateAnimCtrl.isAnimating) {
-        return;
+        rotateAnimCtrl.stop();
       }
 
       await Future.microtask(() => onAnimationStart?.call());
@@ -236,12 +235,9 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
                     textDirection: Directionality.of(context),
                   );
 
-                  final isAnimatingPanFactor =
-                      rotateAnimCtrl.isAnimating ? 0 : 1;
-                  final selectedAngle =
-                      -2 * _math.pi * (selectedIndex.value / items.length);
-                  final panAngle =
-                      panState.distance * panFactor * isAnimatingPanFactor;
+                  final isAnimatingPanFactor = rotateAnimCtrl.isAnimating ? 0 : 1;
+                  final selectedAngle = -2 * _math.pi * (selectedIndex.value / items.length);
+                  final panAngle = panState.distance * panFactor * isAnimatingPanFactor;
                   final rotationAngle = _getAngle(rotateAnim.value);
                   final alignmentOffset = _calculateAlignmentOffset(alignment);
                   final totalAngle = selectedAngle + panAngle + rotationAngle;
@@ -260,9 +256,7 @@ class FortuneWheel extends HookWidget implements FortuneWidget {
                     for (var i = 0; i < items.length; i++)
                       TransformedFortuneItem(
                         item: items[i],
-                        angle: totalAngle +
-                            alignmentOffset +
-                            _calculateSliceAngle(i, items.length),
+                        angle: totalAngle + alignmentOffset + _calculateSliceAngle(i, items.length),
                         offset: wheelData.offset,
                       ),
                   ];
